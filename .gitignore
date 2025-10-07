@@ -1,0 +1,34 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+*.tfplan
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temporary files
+temp/
+tmp/
+
+# PowerShell scripts outputs
+response.json
+
+# Documentation files for Fase 3 (not to be committed)
+README-FASE3.md
+*FASE3*.md
+
+# Backup files
+*.backup

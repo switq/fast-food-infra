@@ -30,6 +30,16 @@ data "aws_subnets" "default" {
   }
 }
 
+// Use a subset of subnets for EKS control plane to avoid AZs unsupported for managed control plane
+locals {
+  # Explicit safe subnet ids (selected to avoid us-east-1e which is unsupported for control plane)
+  eks_control_plane_subnet_ids = [
+    "subnet-0f5b36cb4fb8d18e7", # us-east-1a
+    "subnet-00db9020f55e66f1e", # us-east-1b
+    "subnet-02e1067f075f0cd76", # us-east-1d
+  ]
+}
+
 module "cognito" {
   source = "./modules/cognito"
 
@@ -78,15 +88,15 @@ module "api_gateway" {
   stage_name = var.api_stage_name
   tags       = var.tags
 }
-
-# Module EKS
+// Re-enable the EKS module: previously disabled due to version negotiation issues.
+// Adjust `eks_kubernetes_version` in variables.tf or dev.tfvars if needed.
 module "eks" {
   source = "./modules/eks"
 
   cluster_name         = var.eks_cluster_name
   kubernetes_version   = var.eks_kubernetes_version
-  subnet_ids           = data.aws_subnets.default.ids
-  private_subnet_ids   = data.aws_subnets.default.ids
+  subnet_ids           = local.eks_control_plane_subnet_ids
+  private_subnet_ids   = local.eks_control_plane_subnet_ids
   node_instance_types  = var.eks_node_instance_types
   desired_capacity     = var.eks_desired_capacity
   max_capacity         = var.eks_max_capacity
